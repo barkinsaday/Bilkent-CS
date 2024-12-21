@@ -1,0 +1,128 @@
+%% Part 1: Creating 1D M-point Smoothing Filter
+
+% Image selection: "Lion.bmp"
+B=imread("Lion.bmp");
+K=mat2gray(B, [0 255]);
+img_number = 1;
+
+% Displaying original image
+figure;
+imshow(K);
+title_text = sprintf('Initial Image Display');
+title(title_text, 'FontSize', 14);
+pause(0.5);
+
+for M = [21, 31, 51]
+    % column-wise smoothing operation
+    Z = zeros(512,512);
+    for column = 1:size(K,2)
+        z_column = zeros(512,1);
+        % setting window parameters
+        middle = (M-1)./2;
+        start = -1 * middle;
+        end_window = middle;
+        % going through each window element
+        for j = start:end_window
+            if (((j  + column) >= 1) && ((j + column) <= 512))
+                z_column(:,1) = z_column(:,1)+ K(:,(j+column));
+            end
+        end
+        % updating column with average values
+        Z(:,column) = z_column./M;
+    end
+    % showing the processed image
+    figure(img_number);
+    imshow(Z);
+    filter_size = M;
+    title_text = sprintf('1-D Horizontal M-point Smoothing, M= %d', filter_size);
+    title(title_text, 'FontSize', 14);
+    img_number = img_number + 1;
+end
+
+%% Part 2: Adding Random Noise 
+
+for c = [0.4, 0.9]
+    random_noise = rand(512,512) - (0.5 .* ones(512,512));
+    random_noise = random_noise .* c;
+    modified_K = K + random_noise;
+    for M = [21, 31, 51]
+        % column-wise averaging filter
+        Z = zeros(512,512);
+        for column = 1:size(K,2)
+            z_column = zeros(512,1);
+            % window calculation
+            middle = (M-1)./2;
+            start = -1 * middle;
+            end_window = middle;
+            for j = start:end_window
+                if (((j  + column) >= 1) && ((j + column) <= 512))
+                    z_column(:,1) = z_column(:,1) + modified_K(:,(j+column));
+                end
+            end
+            Z(:,column) = z_column./M;
+        end
+        figure(img_number);
+        imshow(Z);
+        filter_size = M;
+        title_text = sprintf('Noise Added, M= %d, c= %d ', filter_size, c);
+        title(title_text, 'FontSize', 14);
+        img_number = img_number + 1;
+    end
+end
+
+%% Part 3: Frequency Response of Moving Average Filter
+
+for M = [21, 31, 51]
+    filter_length = M;
+    omega = -pi:(pi/100):pi; % frequency range
+    filter_coeff = [ones(1,filter_length)]/filter_length;
+    old_filter = filter_coeff;
+    [response,freq] = freqz(filter_coeff,1,omega);
+    % phase shift adjustment
+    response = response .* exp(((M-1)/2) .* 1j .* omega);
+    new_filter = response;
+    figure(img_number);
+    plot(freq,abs(response));
+    title_text = sprintf('Frequency Response, M= %d', M);
+    title(title_text, 'FontSize', 14);
+    xlabel('Normalised Frequency (x pi rad/sample)');
+    ylabel('Magnitude (dB)');
+    img_number = img_number + 1;
+end
+
+%% Part 4: First Difference Filter Implementation
+
+Z = zeros(512,512);
+for column = 1:size(K,2)
+    z_column = zeros(512,1);
+    for j = -1:0
+        if (((j  + column) >= 1) && ((j + column) <= 512))
+            if (j == 0)
+                z_column(:,1) = z_column(:,1)+ K(:,(j+column));
+            else
+                z_column(:,1) = z_column(:,1) - K(:,(j+column));
+            end
+        end
+    end
+    Z(:,column) = z_column;
+end
+
+figure(img_number);
+imshow(Z);
+title_text = sprintf('First Difference Filter Applied');
+title(title_text, 'FontSize', 14);
+img_number = img_number + 1;
+
+%% Part 5: Frequency Response of First Difference Filter
+
+omega = -pi:(pi/10):pi; % frequency values
+filter_b = [1 -1];
+filter_a = [1];
+figure(img_number);
+[response,freq] = freqz(filter_b,filter_a,omega);
+plot(freq,abs(response));
+xlabel('Normalised Frequency (x pi rad/sample)');
+ylabel('Magnitude (dB)');
+title_text = sprintf('First Difference Filter Frequency Response');
+title(title_text, 'FontSize', 14);
+img_number = img_number + 1;
