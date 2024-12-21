@@ -1,0 +1,3304 @@
+   0  $accept : program $end
+
+   1  program : BEGINN stmts ENDD
+
+   2  stmts : stmt
+   3        | stmt stmts
+
+   4  stmt : matched
+   5       | unmatched
+   6       | non_if_stmt SEMI_COLON
+
+   7  matched : IFF LP bool_ex RP LCURL stmts RCURL ELSE LCURL stmts RCURL
+
+   8  unmatched : IF LP bool_ex RP LCURL stmts RCURL
+
+   9  non_if_stmt : assign
+  10              | func_call
+  11              | return_stmt
+  12              | loop
+  13              | static_func
+
+  14  assign : type IDENTIFIER ASSIGN_OP expr
+  15         | chain ASSIGN_OP expr
+
+  16  return_stmt : RETURN expr
+
+  17  chain : IDENTIFIER
+  18        | call_array
+  19        | chain DOT IDENTIFIER
+  20        | chain DOT call_array
+
+  21  expr : arith_expr
+  22       | TEXT
+  23       | object
+  24       | array
+  25       | bool_ex
+  26       | call_array
+
+  27  arith_expr : arith_expr ADD_OP term
+  28             | arith_expr SUB_OP term
+  29             | term
+
+  30  term : term MUL_OP exp
+  31       | term DIV_OP exp
+  32       | exp
+
+  33  exp : LP arith_expr RP
+  34      | IDENTIFIER
+  35      | constant_value
+  36      | func_call
+
+  37  bool_ex : bool_ex OR_OP bool_term
+  38          | bool_term
+
+  39  bool_term : bool_term AND_OP bool_factor
+  40            | bool_factor
+
+  41  bool_factor : NOT_OP bool_exp
+  42              | bool_exp
+
+  43  bool_exp : LP bool_ex RP
+  44           | bool_value
+  45           | arith_expr comparison arith_expr
+
+  46  call_array : IDENTIFIER LSQUARE expr RSQUARE
+
+  47  func_call : chain LP call_list RP
+  48            | chain LP RP
+  49            | built_in_func
+
+  50  static_func : STATIC type FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL
+  51              | STATIC VOID FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL
+  52              | STATIC type FUNCTION IDENTIFIER LP RP LCURL stmts RCURL
+  53              | STATIC VOID FUNCTION IDENTIFIER LP RP LCURL stmts RCURL
+
+  54  object_func : type FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL
+  55              | VOID FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL
+  56              | type FUNCTION IDENTIFIER LP RP LCURL stmts RCURL
+  57              | VOID FUNCTION IDENTIFIER LP RP LCURL stmts RCURL
+
+  58  built_in_func : chain DOT CONNECT_TO_URL LP call_list RP
+  59                | PRINT LP call_list RP
+  60                | GET_TIME LP RP
+  61                | chain DOT GET_INPUT LP RP
+  62                | chain DOT SEND_INPUT LP call_list RP
+  63                | chain DOT LENGTH LP RP
+  64                | THIS DOT GET_SENSORS LP RP
+  65                | chain DOT GET_SENSORS LP RP
+  66                | chain DOT GET_SENSOR_INPUT LP RP
+  67                | chain DOT TURN_ON_SWITCH LP call_list RP
+  68                | chain DOT TURN_OFF_SWITCH LP call_list RP
+  69                | chain DOT GET_SWITCH LP call_list RP
+  70                | chain DOT GET_NAME LP RP
+
+  71  call_list : expr COMMA call_list
+  72            | expr
+
+  73  decleration_list : type IDENTIFIER COMMA decleration_list
+  74                   | type IDENTIFIER
+
+  75  type : prim
+  76       | LIST
+  77       | OBJECT
+  78       | SENSOR
+
+  79  prim : BOOLEAN
+  80       | INT
+  81       | FLOAT
+  82       | STRING
+
+  83  bool_value : BOOL_TRUE
+  84             | BOOL_FALSE
+
+  85  constant_value : INT_VALUE
+  86                 | FLOAT_VALUE
+
+  87  object : LCURL properties methods RCURL
+  88         | LCURL properties RCURL
+
+  89  properties : type IDENTIFIER COLON expr
+  90             | type IDENTIFIER COLON expr COMMA properties
+
+  91  methods : object_func
+  92          | object_func COMMA methods
+
+  93  array : LSQUARE call_list RSQUARE
+
+  94  loop : LOOP LP bool_ex RP LCURL stmts RCURL
+
+  95  comparison : IS_EQUAL_OP
+  96             | IS_NOT_EQUAL_OP
+  97             | GREATER_OP
+  98             | GREATER_OR_EQUAL_OP
+  99             | LESS_OP
+ 100             | LESS_OR_EQUAL_OP
+
+state 0
+	$accept : . program $end  (0)
+
+	BEGINN  shift 1
+	.  error
+
+	program  goto 2
+
+
+state 1
+	program : BEGINN . stmts ENDD  (1)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 19
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 2
+	$accept : program . $end  (0)
+
+	$end  accept
+
+
+state 3
+	built_in_func : THIS . DOT GET_SENSORS LP RP  (64)
+
+	DOT  shift 34
+	.  error
+
+
+state 4
+	unmatched : IF . LP bool_ex RP LCURL stmts RCURL  (8)
+
+	LP  shift 35
+	.  error
+
+
+state 5
+	matched : IFF . LP bool_ex RP LCURL stmts RCURL ELSE LCURL stmts RCURL  (7)
+
+	LP  shift 36
+	.  error
+
+
+state 6
+	loop : LOOP . LP bool_ex RP LCURL stmts RCURL  (94)
+
+	LP  shift 37
+	.  error
+
+
+state 7
+	type : SENSOR .  (78)
+
+	.  reduce 78
+
+
+state 8
+	prim : STRING .  (82)
+
+	.  reduce 82
+
+
+state 9
+	prim : BOOLEAN .  (79)
+
+	.  reduce 79
+
+
+state 10
+	prim : INT .  (80)
+
+	.  reduce 80
+
+
+state 11
+	prim : FLOAT .  (81)
+
+	.  reduce 81
+
+
+state 12
+	type : LIST .  (76)
+
+	.  reduce 76
+
+
+state 13
+	type : OBJECT .  (77)
+
+	.  reduce 77
+
+
+state 14
+	static_func : STATIC . type FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (50)
+	static_func : STATIC . VOID FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (51)
+	static_func : STATIC . type FUNCTION IDENTIFIER LP RP LCURL stmts RCURL  (52)
+	static_func : STATIC . VOID FUNCTION IDENTIFIER LP RP LCURL stmts RCURL  (53)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	VOID  shift 38
+	.  error
+
+	type  goto 39
+	prim  goto 33
+
+
+state 15
+	return_stmt : RETURN . expr  (16)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 52
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 16
+	built_in_func : GET_TIME . LP RP  (60)
+
+	LP  shift 65
+	.  error
+
+
+state 17
+	built_in_func : PRINT . LP call_list RP  (59)
+
+	LP  shift 66
+	.  error
+
+
+state 18
+	chain : IDENTIFIER .  (17)
+	call_array : IDENTIFIER . LSQUARE expr RSQUARE  (46)
+
+	LSQUARE  shift 67
+	ASSIGN_OP  reduce 17
+	DOT  reduce 17
+	LP  reduce 17
+
+
+state 19
+	program : BEGINN stmts . ENDD  (1)
+
+	ENDD  shift 68
+	.  error
+
+
+state 20
+	stmts : stmt .  (2)
+	stmts : stmt . stmts  (3)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	ENDD  reduce 2
+	RCURL  reduce 2
+
+	stmts  goto 69
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 21
+	stmt : matched .  (4)
+
+	.  reduce 4
+
+
+state 22
+	stmt : unmatched .  (5)
+
+	.  reduce 5
+
+
+state 23
+	stmt : non_if_stmt . SEMI_COLON  (6)
+
+	SEMI_COLON  shift 70
+	.  error
+
+
+state 24
+	non_if_stmt : assign .  (9)
+
+	.  reduce 9
+
+
+state 25
+	non_if_stmt : func_call .  (10)
+
+	.  reduce 10
+
+
+state 26
+	non_if_stmt : return_stmt .  (11)
+
+	.  reduce 11
+
+
+state 27
+	non_if_stmt : loop .  (12)
+
+	.  reduce 12
+
+
+state 28
+	non_if_stmt : static_func .  (13)
+
+	.  reduce 13
+
+
+state 29
+	assign : type . IDENTIFIER ASSIGN_OP expr  (14)
+
+	IDENTIFIER  shift 71
+	.  error
+
+
+state 30
+	assign : chain . ASSIGN_OP expr  (15)
+	chain : chain . DOT IDENTIFIER  (19)
+	chain : chain . DOT call_array  (20)
+	func_call : chain . LP call_list RP  (47)
+	func_call : chain . LP RP  (48)
+	built_in_func : chain . DOT CONNECT_TO_URL LP call_list RP  (58)
+	built_in_func : chain . DOT GET_INPUT LP RP  (61)
+	built_in_func : chain . DOT SEND_INPUT LP call_list RP  (62)
+	built_in_func : chain . DOT LENGTH LP RP  (63)
+	built_in_func : chain . DOT GET_SENSORS LP RP  (65)
+	built_in_func : chain . DOT GET_SENSOR_INPUT LP RP  (66)
+	built_in_func : chain . DOT TURN_ON_SWITCH LP call_list RP  (67)
+	built_in_func : chain . DOT TURN_OFF_SWITCH LP call_list RP  (68)
+	built_in_func : chain . DOT GET_SWITCH LP call_list RP  (69)
+	built_in_func : chain . DOT GET_NAME LP RP  (70)
+
+	ASSIGN_OP  shift 72
+	DOT  shift 73
+	LP  shift 74
+	.  error
+
+
+state 31
+	chain : call_array .  (18)
+
+	.  reduce 18
+
+
+state 32
+	func_call : built_in_func .  (49)
+
+	.  reduce 49
+
+
+state 33
+	type : prim .  (75)
+
+	.  reduce 75
+
+
+state 34
+	built_in_func : THIS DOT . GET_SENSORS LP RP  (64)
+
+	GET_SENSORS  shift 75
+	.  error
+
+
+state 35
+	unmatched : IF LP . bool_ex RP LCURL stmts RCURL  (8)
+
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LP  shift 45
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 76
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	arith_expr  goto 77
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 36
+	matched : IFF LP . bool_ex RP LCURL stmts RCURL ELSE LCURL stmts RCURL  (7)
+
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LP  shift 45
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 78
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	arith_expr  goto 77
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 37
+	loop : LOOP LP . bool_ex RP LCURL stmts RCURL  (94)
+
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LP  shift 45
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 79
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	arith_expr  goto 77
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 38
+	static_func : STATIC VOID . FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (51)
+	static_func : STATIC VOID . FUNCTION IDENTIFIER LP RP LCURL stmts RCURL  (53)
+
+	FUNCTION  shift 80
+	.  error
+
+
+state 39
+	static_func : STATIC type . FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (50)
+	static_func : STATIC type . FUNCTION IDENTIFIER LP RP LCURL stmts RCURL  (52)
+
+	FUNCTION  shift 81
+	.  error
+
+
+state 40
+	expr : TEXT .  (22)
+
+	.  reduce 22
+
+
+state 41
+	bool_value : BOOL_TRUE .  (83)
+
+	.  reduce 83
+
+
+state 42
+	bool_value : BOOL_FALSE .  (84)
+
+	.  reduce 84
+
+
+state 43
+	bool_factor : NOT_OP . bool_exp  (41)
+
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	LP  shift 45
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	arith_expr  goto 77
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_exp  goto 82
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 44
+	object : LCURL . properties methods RCURL  (87)
+	object : LCURL . properties RCURL  (88)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	.  error
+
+	type  goto 83
+	prim  goto 33
+	properties  goto 84
+
+
+state 45
+	exp : LP . arith_expr RP  (33)
+	bool_exp : LP . bool_ex RP  (43)
+
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LP  shift 45
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 85
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	arith_expr  goto 86
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 46
+	array : LSQUARE . call_list RSQUARE  (93)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 87
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	call_list  goto 88
+	built_in_func  goto 32
+
+
+state 47
+	chain : IDENTIFIER .  (17)
+	exp : IDENTIFIER .  (34)
+	call_array : IDENTIFIER . LSQUARE expr RSQUARE  (46)
+
+	LSQUARE  shift 67
+	SENSOR  reduce 34
+	STRING  reduce 34
+	BOOLEAN  reduce 34
+	INT  reduce 34
+	FLOAT  reduce 34
+	LIST  reduce 34
+	OBJECT  reduce 34
+	VOID  reduce 34
+	IS_EQUAL_OP  reduce 34
+	IS_NOT_EQUAL_OP  reduce 34
+	GREATER_OP  reduce 34
+	GREATER_OR_EQUAL_OP  reduce 34
+	LESS_OR_EQUAL_OP  reduce 34
+	LESS_OP  reduce 34
+	ADD_OP  reduce 34
+	SUB_OP  reduce 34
+	MUL_OP  reduce 34
+	DIV_OP  reduce 34
+	AND_OP  reduce 34
+	OR_OP  reduce 34
+	SEMI_COLON  reduce 34
+	COMMA  reduce 34
+	DOT  reduce 17
+	RCURL  reduce 34
+	LP  reduce 17
+	RP  reduce 34
+	RSQUARE  reduce 34
+
+
+state 48
+	constant_value : INT_VALUE .  (85)
+
+	.  reduce 85
+
+
+state 49
+	constant_value : FLOAT_VALUE .  (86)
+
+	.  reduce 86
+
+
+state 50
+	expr : bool_ex .  (25)
+	bool_ex : bool_ex . OR_OP bool_term  (37)
+
+	OR_OP  shift 89
+	SENSOR  reduce 25
+	STRING  reduce 25
+	BOOLEAN  reduce 25
+	INT  reduce 25
+	FLOAT  reduce 25
+	LIST  reduce 25
+	OBJECT  reduce 25
+	VOID  reduce 25
+	SEMI_COLON  reduce 25
+	COMMA  reduce 25
+	RCURL  reduce 25
+	RP  reduce 25
+	RSQUARE  reduce 25
+
+
+state 51
+	exp : func_call .  (36)
+
+	.  reduce 36
+
+
+state 52
+	return_stmt : RETURN expr .  (16)
+
+	.  reduce 16
+
+
+state 53
+	chain : chain . DOT IDENTIFIER  (19)
+	chain : chain . DOT call_array  (20)
+	func_call : chain . LP call_list RP  (47)
+	func_call : chain . LP RP  (48)
+	built_in_func : chain . DOT CONNECT_TO_URL LP call_list RP  (58)
+	built_in_func : chain . DOT GET_INPUT LP RP  (61)
+	built_in_func : chain . DOT SEND_INPUT LP call_list RP  (62)
+	built_in_func : chain . DOT LENGTH LP RP  (63)
+	built_in_func : chain . DOT GET_SENSORS LP RP  (65)
+	built_in_func : chain . DOT GET_SENSOR_INPUT LP RP  (66)
+	built_in_func : chain . DOT TURN_ON_SWITCH LP call_list RP  (67)
+	built_in_func : chain . DOT TURN_OFF_SWITCH LP call_list RP  (68)
+	built_in_func : chain . DOT GET_SWITCH LP call_list RP  (69)
+	built_in_func : chain . DOT GET_NAME LP RP  (70)
+
+	DOT  shift 73
+	LP  shift 74
+	.  error
+
+
+state 54
+	chain : call_array .  (18)
+	expr : call_array .  (26)
+
+	SENSOR  reduce 26
+	STRING  reduce 26
+	BOOLEAN  reduce 26
+	INT  reduce 26
+	FLOAT  reduce 26
+	LIST  reduce 26
+	OBJECT  reduce 26
+	VOID  reduce 26
+	SEMI_COLON  reduce 26
+	COMMA  reduce 26
+	DOT  reduce 18
+	RCURL  reduce 26
+	LP  reduce 18
+	RP  reduce 26
+	RSQUARE  reduce 26
+
+
+state 55
+	expr : arith_expr .  (21)
+	arith_expr : arith_expr . ADD_OP term  (27)
+	arith_expr : arith_expr . SUB_OP term  (28)
+	bool_exp : arith_expr . comparison arith_expr  (45)
+
+	IS_EQUAL_OP  shift 90
+	IS_NOT_EQUAL_OP  shift 91
+	GREATER_OP  shift 92
+	GREATER_OR_EQUAL_OP  shift 93
+	LESS_OR_EQUAL_OP  shift 94
+	LESS_OP  shift 95
+	ADD_OP  shift 96
+	SUB_OP  shift 97
+	SENSOR  reduce 21
+	STRING  reduce 21
+	BOOLEAN  reduce 21
+	INT  reduce 21
+	FLOAT  reduce 21
+	LIST  reduce 21
+	OBJECT  reduce 21
+	VOID  reduce 21
+	SEMI_COLON  reduce 21
+	COMMA  reduce 21
+	RCURL  reduce 21
+	RP  reduce 21
+	RSQUARE  reduce 21
+
+	comparison  goto 98
+
+
+state 56
+	expr : object .  (23)
+
+	.  reduce 23
+
+
+state 57
+	expr : array .  (24)
+
+	.  reduce 24
+
+
+state 58
+	arith_expr : term .  (29)
+	term : term . MUL_OP exp  (30)
+	term : term . DIV_OP exp  (31)
+
+	MUL_OP  shift 99
+	DIV_OP  shift 100
+	SENSOR  reduce 29
+	STRING  reduce 29
+	BOOLEAN  reduce 29
+	INT  reduce 29
+	FLOAT  reduce 29
+	LIST  reduce 29
+	OBJECT  reduce 29
+	VOID  reduce 29
+	IS_EQUAL_OP  reduce 29
+	IS_NOT_EQUAL_OP  reduce 29
+	GREATER_OP  reduce 29
+	GREATER_OR_EQUAL_OP  reduce 29
+	LESS_OR_EQUAL_OP  reduce 29
+	LESS_OP  reduce 29
+	ADD_OP  reduce 29
+	SUB_OP  reduce 29
+	AND_OP  reduce 29
+	OR_OP  reduce 29
+	SEMI_COLON  reduce 29
+	COMMA  reduce 29
+	RCURL  reduce 29
+	RP  reduce 29
+	RSQUARE  reduce 29
+
+
+state 59
+	term : exp .  (32)
+
+	.  reduce 32
+
+
+state 60
+	exp : constant_value .  (35)
+
+	.  reduce 35
+
+
+state 61
+	bool_ex : bool_term .  (38)
+	bool_term : bool_term . AND_OP bool_factor  (39)
+
+	AND_OP  shift 101
+	SENSOR  reduce 38
+	STRING  reduce 38
+	BOOLEAN  reduce 38
+	INT  reduce 38
+	FLOAT  reduce 38
+	LIST  reduce 38
+	OBJECT  reduce 38
+	VOID  reduce 38
+	OR_OP  reduce 38
+	SEMI_COLON  reduce 38
+	COMMA  reduce 38
+	RCURL  reduce 38
+	RP  reduce 38
+	RSQUARE  reduce 38
+
+
+state 62
+	bool_term : bool_factor .  (40)
+
+	.  reduce 40
+
+
+state 63
+	bool_factor : bool_exp .  (42)
+
+	.  reduce 42
+
+
+state 64
+	bool_exp : bool_value .  (44)
+
+	.  reduce 44
+
+
+state 65
+	built_in_func : GET_TIME LP . RP  (60)
+
+	RP  shift 102
+	.  error
+
+
+state 66
+	built_in_func : PRINT LP . call_list RP  (59)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 87
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	call_list  goto 103
+	built_in_func  goto 32
+
+
+state 67
+	call_array : IDENTIFIER LSQUARE . expr RSQUARE  (46)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 104
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 68
+	program : BEGINN stmts ENDD .  (1)
+
+	.  reduce 1
+
+
+state 69
+	stmts : stmt stmts .  (3)
+
+	.  reduce 3
+
+
+state 70
+	stmt : non_if_stmt SEMI_COLON .  (6)
+
+	.  reduce 6
+
+
+state 71
+	assign : type IDENTIFIER . ASSIGN_OP expr  (14)
+
+	ASSIGN_OP  shift 105
+	.  error
+
+
+state 72
+	assign : chain ASSIGN_OP . expr  (15)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 106
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 73
+	chain : chain DOT . IDENTIFIER  (19)
+	chain : chain DOT . call_array  (20)
+	built_in_func : chain DOT . CONNECT_TO_URL LP call_list RP  (58)
+	built_in_func : chain DOT . GET_INPUT LP RP  (61)
+	built_in_func : chain DOT . SEND_INPUT LP call_list RP  (62)
+	built_in_func : chain DOT . LENGTH LP RP  (63)
+	built_in_func : chain DOT . GET_SENSORS LP RP  (65)
+	built_in_func : chain DOT . GET_SENSOR_INPUT LP RP  (66)
+	built_in_func : chain DOT . TURN_ON_SWITCH LP call_list RP  (67)
+	built_in_func : chain DOT . TURN_OFF_SWITCH LP call_list RP  (68)
+	built_in_func : chain DOT . GET_SWITCH LP call_list RP  (69)
+	built_in_func : chain DOT . GET_NAME LP RP  (70)
+
+	CONNECT_TO_URL  shift 107
+	GET_INPUT  shift 108
+	SEND_INPUT  shift 109
+	LENGTH  shift 110
+	GET_SENSORS  shift 111
+	GET_SENSOR_INPUT  shift 112
+	TURN_ON_SWITCH  shift 113
+	TURN_OFF_SWITCH  shift 114
+	GET_SWITCH  shift 115
+	GET_NAME  shift 116
+	IDENTIFIER  shift 117
+	.  error
+
+	call_array  goto 118
+
+
+state 74
+	func_call : chain LP . call_list RP  (47)
+	func_call : chain LP . RP  (48)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	RP  shift 119
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 87
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	call_list  goto 120
+	built_in_func  goto 32
+
+
+state 75
+	built_in_func : THIS DOT GET_SENSORS . LP RP  (64)
+
+	LP  shift 121
+	.  error
+
+
+state 76
+	unmatched : IF LP bool_ex . RP LCURL stmts RCURL  (8)
+	bool_ex : bool_ex . OR_OP bool_term  (37)
+
+	OR_OP  shift 89
+	RP  shift 122
+	.  error
+
+
+state 77
+	arith_expr : arith_expr . ADD_OP term  (27)
+	arith_expr : arith_expr . SUB_OP term  (28)
+	bool_exp : arith_expr . comparison arith_expr  (45)
+
+	IS_EQUAL_OP  shift 90
+	IS_NOT_EQUAL_OP  shift 91
+	GREATER_OP  shift 92
+	GREATER_OR_EQUAL_OP  shift 93
+	LESS_OR_EQUAL_OP  shift 94
+	LESS_OP  shift 95
+	ADD_OP  shift 96
+	SUB_OP  shift 97
+	.  error
+
+	comparison  goto 98
+
+
+state 78
+	matched : IFF LP bool_ex . RP LCURL stmts RCURL ELSE LCURL stmts RCURL  (7)
+	bool_ex : bool_ex . OR_OP bool_term  (37)
+
+	OR_OP  shift 89
+	RP  shift 123
+	.  error
+
+
+state 79
+	bool_ex : bool_ex . OR_OP bool_term  (37)
+	loop : LOOP LP bool_ex . RP LCURL stmts RCURL  (94)
+
+	OR_OP  shift 89
+	RP  shift 124
+	.  error
+
+
+state 80
+	static_func : STATIC VOID FUNCTION . IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (51)
+	static_func : STATIC VOID FUNCTION . IDENTIFIER LP RP LCURL stmts RCURL  (53)
+
+	IDENTIFIER  shift 125
+	.  error
+
+
+state 81
+	static_func : STATIC type FUNCTION . IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (50)
+	static_func : STATIC type FUNCTION . IDENTIFIER LP RP LCURL stmts RCURL  (52)
+
+	IDENTIFIER  shift 126
+	.  error
+
+
+state 82
+	bool_factor : NOT_OP bool_exp .  (41)
+
+	.  reduce 41
+
+
+state 83
+	properties : type . IDENTIFIER COLON expr  (89)
+	properties : type . IDENTIFIER COLON expr COMMA properties  (90)
+
+	IDENTIFIER  shift 127
+	.  error
+
+
+state 84
+	object : LCURL properties . methods RCURL  (87)
+	object : LCURL properties . RCURL  (88)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	VOID  shift 128
+	RCURL  shift 129
+	.  error
+
+	type  goto 130
+	object_func  goto 131
+	prim  goto 33
+	methods  goto 132
+
+
+state 85
+	bool_ex : bool_ex . OR_OP bool_term  (37)
+	bool_exp : LP bool_ex . RP  (43)
+
+	OR_OP  shift 89
+	RP  shift 133
+	.  error
+
+
+state 86
+	arith_expr : arith_expr . ADD_OP term  (27)
+	arith_expr : arith_expr . SUB_OP term  (28)
+	exp : LP arith_expr . RP  (33)
+	bool_exp : arith_expr . comparison arith_expr  (45)
+
+	IS_EQUAL_OP  shift 90
+	IS_NOT_EQUAL_OP  shift 91
+	GREATER_OP  shift 92
+	GREATER_OR_EQUAL_OP  shift 93
+	LESS_OR_EQUAL_OP  shift 94
+	LESS_OP  shift 95
+	ADD_OP  shift 96
+	SUB_OP  shift 97
+	RP  shift 134
+	.  error
+
+	comparison  goto 98
+
+
+state 87
+	call_list : expr . COMMA call_list  (71)
+	call_list : expr .  (72)
+
+	COMMA  shift 135
+	RP  reduce 72
+	RSQUARE  reduce 72
+
+
+state 88
+	array : LSQUARE call_list . RSQUARE  (93)
+
+	RSQUARE  shift 136
+	.  error
+
+
+state 89
+	bool_ex : bool_ex OR_OP . bool_term  (37)
+
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LP  shift 45
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	arith_expr  goto 77
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 137
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 90
+	comparison : IS_EQUAL_OP .  (95)
+
+	.  reduce 95
+
+
+state 91
+	comparison : IS_NOT_EQUAL_OP .  (96)
+
+	.  reduce 96
+
+
+state 92
+	comparison : GREATER_OP .  (97)
+
+	.  reduce 97
+
+
+state 93
+	comparison : GREATER_OR_EQUAL_OP .  (98)
+
+	.  reduce 98
+
+
+state 94
+	comparison : LESS_OR_EQUAL_OP .  (100)
+
+	.  reduce 100
+
+
+state 95
+	comparison : LESS_OP .  (99)
+
+	.  reduce 99
+
+
+state 96
+	arith_expr : arith_expr ADD_OP . term  (27)
+
+	THIS  shift 3
+	GET_TIME  shift 16
+	PRINT  shift 17
+	LP  shift 138
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	term  goto 139
+	exp  goto 59
+	constant_value  goto 60
+	built_in_func  goto 32
+
+
+state 97
+	arith_expr : arith_expr SUB_OP . term  (28)
+
+	THIS  shift 3
+	GET_TIME  shift 16
+	PRINT  shift 17
+	LP  shift 138
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	term  goto 140
+	exp  goto 59
+	constant_value  goto 60
+	built_in_func  goto 32
+
+
+state 98
+	bool_exp : arith_expr comparison . arith_expr  (45)
+
+	THIS  shift 3
+	GET_TIME  shift 16
+	PRINT  shift 17
+	LP  shift 138
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	arith_expr  goto 141
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	built_in_func  goto 32
+
+
+state 99
+	term : term MUL_OP . exp  (30)
+
+	THIS  shift 3
+	GET_TIME  shift 16
+	PRINT  shift 17
+	LP  shift 138
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	exp  goto 142
+	constant_value  goto 60
+	built_in_func  goto 32
+
+
+state 100
+	term : term DIV_OP . exp  (31)
+
+	THIS  shift 3
+	GET_TIME  shift 16
+	PRINT  shift 17
+	LP  shift 138
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	exp  goto 143
+	constant_value  goto 60
+	built_in_func  goto 32
+
+
+state 101
+	bool_term : bool_term AND_OP . bool_factor  (39)
+
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LP  shift 45
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	arith_expr  goto 77
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_factor  goto 144
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 102
+	built_in_func : GET_TIME LP RP .  (60)
+
+	.  reduce 60
+
+
+state 103
+	built_in_func : PRINT LP call_list . RP  (59)
+
+	RP  shift 145
+	.  error
+
+
+state 104
+	call_array : IDENTIFIER LSQUARE expr . RSQUARE  (46)
+
+	RSQUARE  shift 146
+	.  error
+
+
+state 105
+	assign : type IDENTIFIER ASSIGN_OP . expr  (14)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 147
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 106
+	assign : chain ASSIGN_OP expr .  (15)
+
+	.  reduce 15
+
+
+state 107
+	built_in_func : chain DOT CONNECT_TO_URL . LP call_list RP  (58)
+
+	LP  shift 148
+	.  error
+
+
+state 108
+	built_in_func : chain DOT GET_INPUT . LP RP  (61)
+
+	LP  shift 149
+	.  error
+
+
+state 109
+	built_in_func : chain DOT SEND_INPUT . LP call_list RP  (62)
+
+	LP  shift 150
+	.  error
+
+
+state 110
+	built_in_func : chain DOT LENGTH . LP RP  (63)
+
+	LP  shift 151
+	.  error
+
+
+state 111
+	built_in_func : chain DOT GET_SENSORS . LP RP  (65)
+
+	LP  shift 152
+	.  error
+
+
+state 112
+	built_in_func : chain DOT GET_SENSOR_INPUT . LP RP  (66)
+
+	LP  shift 153
+	.  error
+
+
+state 113
+	built_in_func : chain DOT TURN_ON_SWITCH . LP call_list RP  (67)
+
+	LP  shift 154
+	.  error
+
+
+state 114
+	built_in_func : chain DOT TURN_OFF_SWITCH . LP call_list RP  (68)
+
+	LP  shift 155
+	.  error
+
+
+state 115
+	built_in_func : chain DOT GET_SWITCH . LP call_list RP  (69)
+
+	LP  shift 156
+	.  error
+
+
+state 116
+	built_in_func : chain DOT GET_NAME . LP RP  (70)
+
+	LP  shift 157
+	.  error
+
+
+state 117
+	chain : chain DOT IDENTIFIER .  (19)
+	call_array : IDENTIFIER . LSQUARE expr RSQUARE  (46)
+
+	LSQUARE  shift 67
+	ASSIGN_OP  reduce 19
+	DOT  reduce 19
+	LP  reduce 19
+
+
+state 118
+	chain : chain DOT call_array .  (20)
+
+	.  reduce 20
+
+
+state 119
+	func_call : chain LP RP .  (48)
+
+	.  reduce 48
+
+
+state 120
+	func_call : chain LP call_list . RP  (47)
+
+	RP  shift 158
+	.  error
+
+
+state 121
+	built_in_func : THIS DOT GET_SENSORS LP . RP  (64)
+
+	RP  shift 159
+	.  error
+
+
+state 122
+	unmatched : IF LP bool_ex RP . LCURL stmts RCURL  (8)
+
+	LCURL  shift 160
+	.  error
+
+
+state 123
+	matched : IFF LP bool_ex RP . LCURL stmts RCURL ELSE LCURL stmts RCURL  (7)
+
+	LCURL  shift 161
+	.  error
+
+
+state 124
+	loop : LOOP LP bool_ex RP . LCURL stmts RCURL  (94)
+
+	LCURL  shift 162
+	.  error
+
+
+state 125
+	static_func : STATIC VOID FUNCTION IDENTIFIER . LP decleration_list RP LCURL stmts RCURL  (51)
+	static_func : STATIC VOID FUNCTION IDENTIFIER . LP RP LCURL stmts RCURL  (53)
+
+	LP  shift 163
+	.  error
+
+
+state 126
+	static_func : STATIC type FUNCTION IDENTIFIER . LP decleration_list RP LCURL stmts RCURL  (50)
+	static_func : STATIC type FUNCTION IDENTIFIER . LP RP LCURL stmts RCURL  (52)
+
+	LP  shift 164
+	.  error
+
+
+state 127
+	properties : type IDENTIFIER . COLON expr  (89)
+	properties : type IDENTIFIER . COLON expr COMMA properties  (90)
+
+	COLON  shift 165
+	.  error
+
+
+state 128
+	object_func : VOID . FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (55)
+	object_func : VOID . FUNCTION IDENTIFIER LP RP LCURL stmts RCURL  (57)
+
+	FUNCTION  shift 166
+	.  error
+
+
+state 129
+	object : LCURL properties RCURL .  (88)
+
+	.  reduce 88
+
+
+state 130
+	object_func : type . FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (54)
+	object_func : type . FUNCTION IDENTIFIER LP RP LCURL stmts RCURL  (56)
+
+	FUNCTION  shift 167
+	.  error
+
+
+state 131
+	methods : object_func .  (91)
+	methods : object_func . COMMA methods  (92)
+
+	COMMA  shift 168
+	RCURL  reduce 91
+
+
+state 132
+	object : LCURL properties methods . RCURL  (87)
+
+	RCURL  shift 169
+	.  error
+
+
+state 133
+	bool_exp : LP bool_ex RP .  (43)
+
+	.  reduce 43
+
+
+state 134
+	exp : LP arith_expr RP .  (33)
+
+	.  reduce 33
+
+
+state 135
+	call_list : expr COMMA . call_list  (71)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 87
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	call_list  goto 170
+	built_in_func  goto 32
+
+
+state 136
+	array : LSQUARE call_list RSQUARE .  (93)
+
+	.  reduce 93
+
+
+state 137
+	bool_ex : bool_ex OR_OP bool_term .  (37)
+	bool_term : bool_term . AND_OP bool_factor  (39)
+
+	AND_OP  shift 101
+	SENSOR  reduce 37
+	STRING  reduce 37
+	BOOLEAN  reduce 37
+	INT  reduce 37
+	FLOAT  reduce 37
+	LIST  reduce 37
+	OBJECT  reduce 37
+	VOID  reduce 37
+	OR_OP  reduce 37
+	SEMI_COLON  reduce 37
+	COMMA  reduce 37
+	RCURL  reduce 37
+	RP  reduce 37
+	RSQUARE  reduce 37
+
+
+state 138
+	exp : LP . arith_expr RP  (33)
+
+	THIS  shift 3
+	GET_TIME  shift 16
+	PRINT  shift 17
+	LP  shift 138
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	func_call  goto 51
+	chain  goto 53
+	call_array  goto 31
+	arith_expr  goto 171
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	built_in_func  goto 32
+
+
+state 139
+	arith_expr : arith_expr ADD_OP term .  (27)
+	term : term . MUL_OP exp  (30)
+	term : term . DIV_OP exp  (31)
+
+	MUL_OP  shift 99
+	DIV_OP  shift 100
+	SENSOR  reduce 27
+	STRING  reduce 27
+	BOOLEAN  reduce 27
+	INT  reduce 27
+	FLOAT  reduce 27
+	LIST  reduce 27
+	OBJECT  reduce 27
+	VOID  reduce 27
+	IS_EQUAL_OP  reduce 27
+	IS_NOT_EQUAL_OP  reduce 27
+	GREATER_OP  reduce 27
+	GREATER_OR_EQUAL_OP  reduce 27
+	LESS_OR_EQUAL_OP  reduce 27
+	LESS_OP  reduce 27
+	ADD_OP  reduce 27
+	SUB_OP  reduce 27
+	AND_OP  reduce 27
+	OR_OP  reduce 27
+	SEMI_COLON  reduce 27
+	COMMA  reduce 27
+	RCURL  reduce 27
+	RP  reduce 27
+	RSQUARE  reduce 27
+
+
+state 140
+	arith_expr : arith_expr SUB_OP term .  (28)
+	term : term . MUL_OP exp  (30)
+	term : term . DIV_OP exp  (31)
+
+	MUL_OP  shift 99
+	DIV_OP  shift 100
+	SENSOR  reduce 28
+	STRING  reduce 28
+	BOOLEAN  reduce 28
+	INT  reduce 28
+	FLOAT  reduce 28
+	LIST  reduce 28
+	OBJECT  reduce 28
+	VOID  reduce 28
+	IS_EQUAL_OP  reduce 28
+	IS_NOT_EQUAL_OP  reduce 28
+	GREATER_OP  reduce 28
+	GREATER_OR_EQUAL_OP  reduce 28
+	LESS_OR_EQUAL_OP  reduce 28
+	LESS_OP  reduce 28
+	ADD_OP  reduce 28
+	SUB_OP  reduce 28
+	AND_OP  reduce 28
+	OR_OP  reduce 28
+	SEMI_COLON  reduce 28
+	COMMA  reduce 28
+	RCURL  reduce 28
+	RP  reduce 28
+	RSQUARE  reduce 28
+
+
+state 141
+	arith_expr : arith_expr . ADD_OP term  (27)
+	arith_expr : arith_expr . SUB_OP term  (28)
+	bool_exp : arith_expr comparison arith_expr .  (45)
+
+	ADD_OP  shift 96
+	SUB_OP  shift 97
+	SENSOR  reduce 45
+	STRING  reduce 45
+	BOOLEAN  reduce 45
+	INT  reduce 45
+	FLOAT  reduce 45
+	LIST  reduce 45
+	OBJECT  reduce 45
+	VOID  reduce 45
+	AND_OP  reduce 45
+	OR_OP  reduce 45
+	SEMI_COLON  reduce 45
+	COMMA  reduce 45
+	RCURL  reduce 45
+	RP  reduce 45
+	RSQUARE  reduce 45
+
+
+state 142
+	term : term MUL_OP exp .  (30)
+
+	.  reduce 30
+
+
+state 143
+	term : term DIV_OP exp .  (31)
+
+	.  reduce 31
+
+
+state 144
+	bool_term : bool_term AND_OP bool_factor .  (39)
+
+	.  reduce 39
+
+
+state 145
+	built_in_func : PRINT LP call_list RP .  (59)
+
+	.  reduce 59
+
+
+state 146
+	call_array : IDENTIFIER LSQUARE expr RSQUARE .  (46)
+
+	.  reduce 46
+
+
+state 147
+	assign : type IDENTIFIER ASSIGN_OP expr .  (14)
+
+	.  reduce 14
+
+
+state 148
+	built_in_func : chain DOT CONNECT_TO_URL LP . call_list RP  (58)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 87
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	call_list  goto 172
+	built_in_func  goto 32
+
+
+state 149
+	built_in_func : chain DOT GET_INPUT LP . RP  (61)
+
+	RP  shift 173
+	.  error
+
+
+state 150
+	built_in_func : chain DOT SEND_INPUT LP . call_list RP  (62)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 87
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	call_list  goto 174
+	built_in_func  goto 32
+
+
+state 151
+	built_in_func : chain DOT LENGTH LP . RP  (63)
+
+	RP  shift 175
+	.  error
+
+
+state 152
+	built_in_func : chain DOT GET_SENSORS LP . RP  (65)
+
+	RP  shift 176
+	.  error
+
+
+state 153
+	built_in_func : chain DOT GET_SENSOR_INPUT LP . RP  (66)
+
+	RP  shift 177
+	.  error
+
+
+state 154
+	built_in_func : chain DOT TURN_ON_SWITCH LP . call_list RP  (67)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 87
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	call_list  goto 178
+	built_in_func  goto 32
+
+
+state 155
+	built_in_func : chain DOT TURN_OFF_SWITCH LP . call_list RP  (68)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 87
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	call_list  goto 179
+	built_in_func  goto 32
+
+
+state 156
+	built_in_func : chain DOT GET_SWITCH LP . call_list RP  (69)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 87
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	call_list  goto 180
+	built_in_func  goto 32
+
+
+state 157
+	built_in_func : chain DOT GET_NAME LP . RP  (70)
+
+	RP  shift 181
+	.  error
+
+
+state 158
+	func_call : chain LP call_list RP .  (47)
+
+	.  reduce 47
+
+
+state 159
+	built_in_func : THIS DOT GET_SENSORS LP RP .  (64)
+
+	.  reduce 64
+
+
+state 160
+	unmatched : IF LP bool_ex RP LCURL . stmts RCURL  (8)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 182
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 161
+	matched : IFF LP bool_ex RP LCURL . stmts RCURL ELSE LCURL stmts RCURL  (7)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 183
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 162
+	loop : LOOP LP bool_ex RP LCURL . stmts RCURL  (94)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 184
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 163
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP . decleration_list RP LCURL stmts RCURL  (51)
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP . RP LCURL stmts RCURL  (53)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	RP  shift 185
+	.  error
+
+	type  goto 186
+	decleration_list  goto 187
+	prim  goto 33
+
+
+state 164
+	static_func : STATIC type FUNCTION IDENTIFIER LP . decleration_list RP LCURL stmts RCURL  (50)
+	static_func : STATIC type FUNCTION IDENTIFIER LP . RP LCURL stmts RCURL  (52)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	RP  shift 188
+	.  error
+
+	type  goto 186
+	decleration_list  goto 189
+	prim  goto 33
+
+
+state 165
+	properties : type IDENTIFIER COLON . expr  (89)
+	properties : type IDENTIFIER COLON . expr COMMA properties  (90)
+
+	TEXT  shift 40
+	THIS  shift 3
+	BOOL_TRUE  shift 41
+	BOOL_FALSE  shift 42
+	GET_TIME  shift 16
+	PRINT  shift 17
+	NOT_OP  shift 43
+	LCURL  shift 44
+	LP  shift 45
+	LSQUARE  shift 46
+	IDENTIFIER  shift 47
+	INT_VALUE  shift 48
+	FLOAT_VALUE  shift 49
+	.  error
+
+	bool_ex  goto 50
+	func_call  goto 51
+	expr  goto 190
+	chain  goto 53
+	call_array  goto 54
+	arith_expr  goto 55
+	object  goto 56
+	array  goto 57
+	term  goto 58
+	exp  goto 59
+	constant_value  goto 60
+	bool_term  goto 61
+	bool_factor  goto 62
+	bool_exp  goto 63
+	bool_value  goto 64
+	built_in_func  goto 32
+
+
+state 166
+	object_func : VOID FUNCTION . IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (55)
+	object_func : VOID FUNCTION . IDENTIFIER LP RP LCURL stmts RCURL  (57)
+
+	IDENTIFIER  shift 191
+	.  error
+
+
+state 167
+	object_func : type FUNCTION . IDENTIFIER LP decleration_list RP LCURL stmts RCURL  (54)
+	object_func : type FUNCTION . IDENTIFIER LP RP LCURL stmts RCURL  (56)
+
+	IDENTIFIER  shift 192
+	.  error
+
+
+state 168
+	methods : object_func COMMA . methods  (92)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	VOID  shift 128
+	.  error
+
+	type  goto 130
+	object_func  goto 131
+	prim  goto 33
+	methods  goto 193
+
+
+state 169
+	object : LCURL properties methods RCURL .  (87)
+
+	.  reduce 87
+
+
+state 170
+	call_list : expr COMMA call_list .  (71)
+
+	.  reduce 71
+
+
+state 171
+	arith_expr : arith_expr . ADD_OP term  (27)
+	arith_expr : arith_expr . SUB_OP term  (28)
+	exp : LP arith_expr . RP  (33)
+
+	ADD_OP  shift 96
+	SUB_OP  shift 97
+	RP  shift 134
+	.  error
+
+
+state 172
+	built_in_func : chain DOT CONNECT_TO_URL LP call_list . RP  (58)
+
+	RP  shift 194
+	.  error
+
+
+state 173
+	built_in_func : chain DOT GET_INPUT LP RP .  (61)
+
+	.  reduce 61
+
+
+state 174
+	built_in_func : chain DOT SEND_INPUT LP call_list . RP  (62)
+
+	RP  shift 195
+	.  error
+
+
+state 175
+	built_in_func : chain DOT LENGTH LP RP .  (63)
+
+	.  reduce 63
+
+
+state 176
+	built_in_func : chain DOT GET_SENSORS LP RP .  (65)
+
+	.  reduce 65
+
+
+state 177
+	built_in_func : chain DOT GET_SENSOR_INPUT LP RP .  (66)
+
+	.  reduce 66
+
+
+state 178
+	built_in_func : chain DOT TURN_ON_SWITCH LP call_list . RP  (67)
+
+	RP  shift 196
+	.  error
+
+
+state 179
+	built_in_func : chain DOT TURN_OFF_SWITCH LP call_list . RP  (68)
+
+	RP  shift 197
+	.  error
+
+
+state 180
+	built_in_func : chain DOT GET_SWITCH LP call_list . RP  (69)
+
+	RP  shift 198
+	.  error
+
+
+state 181
+	built_in_func : chain DOT GET_NAME LP RP .  (70)
+
+	.  reduce 70
+
+
+state 182
+	unmatched : IF LP bool_ex RP LCURL stmts . RCURL  (8)
+
+	RCURL  shift 199
+	.  error
+
+
+state 183
+	matched : IFF LP bool_ex RP LCURL stmts . RCURL ELSE LCURL stmts RCURL  (7)
+
+	RCURL  shift 200
+	.  error
+
+
+state 184
+	loop : LOOP LP bool_ex RP LCURL stmts . RCURL  (94)
+
+	RCURL  shift 201
+	.  error
+
+
+state 185
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP RP . LCURL stmts RCURL  (53)
+
+	LCURL  shift 202
+	.  error
+
+
+state 186
+	decleration_list : type . IDENTIFIER COMMA decleration_list  (73)
+	decleration_list : type . IDENTIFIER  (74)
+
+	IDENTIFIER  shift 203
+	.  error
+
+
+state 187
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP decleration_list . RP LCURL stmts RCURL  (51)
+
+	RP  shift 204
+	.  error
+
+
+state 188
+	static_func : STATIC type FUNCTION IDENTIFIER LP RP . LCURL stmts RCURL  (52)
+
+	LCURL  shift 205
+	.  error
+
+
+state 189
+	static_func : STATIC type FUNCTION IDENTIFIER LP decleration_list . RP LCURL stmts RCURL  (50)
+
+	RP  shift 206
+	.  error
+
+
+state 190
+	properties : type IDENTIFIER COLON expr .  (89)
+	properties : type IDENTIFIER COLON expr . COMMA properties  (90)
+
+	COMMA  shift 207
+	SENSOR  reduce 89
+	STRING  reduce 89
+	BOOLEAN  reduce 89
+	INT  reduce 89
+	FLOAT  reduce 89
+	LIST  reduce 89
+	OBJECT  reduce 89
+	VOID  reduce 89
+	RCURL  reduce 89
+
+
+state 191
+	object_func : VOID FUNCTION IDENTIFIER . LP decleration_list RP LCURL stmts RCURL  (55)
+	object_func : VOID FUNCTION IDENTIFIER . LP RP LCURL stmts RCURL  (57)
+
+	LP  shift 208
+	.  error
+
+
+state 192
+	object_func : type FUNCTION IDENTIFIER . LP decleration_list RP LCURL stmts RCURL  (54)
+	object_func : type FUNCTION IDENTIFIER . LP RP LCURL stmts RCURL  (56)
+
+	LP  shift 209
+	.  error
+
+
+state 193
+	methods : object_func COMMA methods .  (92)
+
+	.  reduce 92
+
+
+state 194
+	built_in_func : chain DOT CONNECT_TO_URL LP call_list RP .  (58)
+
+	.  reduce 58
+
+
+state 195
+	built_in_func : chain DOT SEND_INPUT LP call_list RP .  (62)
+
+	.  reduce 62
+
+
+state 196
+	built_in_func : chain DOT TURN_ON_SWITCH LP call_list RP .  (67)
+
+	.  reduce 67
+
+
+state 197
+	built_in_func : chain DOT TURN_OFF_SWITCH LP call_list RP .  (68)
+
+	.  reduce 68
+
+
+state 198
+	built_in_func : chain DOT GET_SWITCH LP call_list RP .  (69)
+
+	.  reduce 69
+
+
+state 199
+	unmatched : IF LP bool_ex RP LCURL stmts RCURL .  (8)
+
+	.  reduce 8
+
+
+state 200
+	matched : IFF LP bool_ex RP LCURL stmts RCURL . ELSE LCURL stmts RCURL  (7)
+
+	ELSE  shift 210
+	.  error
+
+
+state 201
+	loop : LOOP LP bool_ex RP LCURL stmts RCURL .  (94)
+
+	.  reduce 94
+
+
+state 202
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP RP LCURL . stmts RCURL  (53)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 211
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 203
+	decleration_list : type IDENTIFIER . COMMA decleration_list  (73)
+	decleration_list : type IDENTIFIER .  (74)
+
+	COMMA  shift 212
+	RP  reduce 74
+
+
+state 204
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP decleration_list RP . LCURL stmts RCURL  (51)
+
+	LCURL  shift 213
+	.  error
+
+
+state 205
+	static_func : STATIC type FUNCTION IDENTIFIER LP RP LCURL . stmts RCURL  (52)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 214
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 206
+	static_func : STATIC type FUNCTION IDENTIFIER LP decleration_list RP . LCURL stmts RCURL  (50)
+
+	LCURL  shift 215
+	.  error
+
+
+state 207
+	properties : type IDENTIFIER COLON expr COMMA . properties  (90)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	.  error
+
+	type  goto 83
+	prim  goto 33
+	properties  goto 216
+
+
+state 208
+	object_func : VOID FUNCTION IDENTIFIER LP . decleration_list RP LCURL stmts RCURL  (55)
+	object_func : VOID FUNCTION IDENTIFIER LP . RP LCURL stmts RCURL  (57)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	RP  shift 217
+	.  error
+
+	type  goto 186
+	decleration_list  goto 218
+	prim  goto 33
+
+
+state 209
+	object_func : type FUNCTION IDENTIFIER LP . decleration_list RP LCURL stmts RCURL  (54)
+	object_func : type FUNCTION IDENTIFIER LP . RP LCURL stmts RCURL  (56)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	RP  shift 219
+	.  error
+
+	type  goto 186
+	decleration_list  goto 220
+	prim  goto 33
+
+
+state 210
+	matched : IFF LP bool_ex RP LCURL stmts RCURL ELSE . LCURL stmts RCURL  (7)
+
+	LCURL  shift 221
+	.  error
+
+
+state 211
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP RP LCURL stmts . RCURL  (53)
+
+	RCURL  shift 222
+	.  error
+
+
+state 212
+	decleration_list : type IDENTIFIER COMMA . decleration_list  (73)
+
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	.  error
+
+	type  goto 186
+	decleration_list  goto 223
+	prim  goto 33
+
+
+state 213
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP decleration_list RP LCURL . stmts RCURL  (51)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 224
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 214
+	static_func : STATIC type FUNCTION IDENTIFIER LP RP LCURL stmts . RCURL  (52)
+
+	RCURL  shift 225
+	.  error
+
+
+state 215
+	static_func : STATIC type FUNCTION IDENTIFIER LP decleration_list RP LCURL . stmts RCURL  (50)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 226
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 216
+	properties : type IDENTIFIER COLON expr COMMA properties .  (90)
+
+	.  reduce 90
+
+
+state 217
+	object_func : VOID FUNCTION IDENTIFIER LP RP . LCURL stmts RCURL  (57)
+
+	LCURL  shift 227
+	.  error
+
+
+state 218
+	object_func : VOID FUNCTION IDENTIFIER LP decleration_list . RP LCURL stmts RCURL  (55)
+
+	RP  shift 228
+	.  error
+
+
+state 219
+	object_func : type FUNCTION IDENTIFIER LP RP . LCURL stmts RCURL  (56)
+
+	LCURL  shift 229
+	.  error
+
+
+state 220
+	object_func : type FUNCTION IDENTIFIER LP decleration_list . RP LCURL stmts RCURL  (54)
+
+	RP  shift 230
+	.  error
+
+
+state 221
+	matched : IFF LP bool_ex RP LCURL stmts RCURL ELSE LCURL . stmts RCURL  (7)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 231
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 222
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP RP LCURL stmts RCURL .  (53)
+
+	.  reduce 53
+
+
+state 223
+	decleration_list : type IDENTIFIER COMMA decleration_list .  (73)
+
+	.  reduce 73
+
+
+state 224
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts . RCURL  (51)
+
+	RCURL  shift 232
+	.  error
+
+
+state 225
+	static_func : STATIC type FUNCTION IDENTIFIER LP RP LCURL stmts RCURL .  (52)
+
+	.  reduce 52
+
+
+state 226
+	static_func : STATIC type FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts . RCURL  (50)
+
+	RCURL  shift 233
+	.  error
+
+
+state 227
+	object_func : VOID FUNCTION IDENTIFIER LP RP LCURL . stmts RCURL  (57)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 234
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 228
+	object_func : VOID FUNCTION IDENTIFIER LP decleration_list RP . LCURL stmts RCURL  (55)
+
+	LCURL  shift 235
+	.  error
+
+
+state 229
+	object_func : type FUNCTION IDENTIFIER LP RP LCURL . stmts RCURL  (56)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 236
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 230
+	object_func : type FUNCTION IDENTIFIER LP decleration_list RP . LCURL stmts RCURL  (54)
+
+	LCURL  shift 237
+	.  error
+
+
+state 231
+	matched : IFF LP bool_ex RP LCURL stmts RCURL ELSE LCURL stmts . RCURL  (7)
+
+	RCURL  shift 238
+	.  error
+
+
+state 232
+	static_func : STATIC VOID FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL .  (51)
+
+	.  reduce 51
+
+
+state 233
+	static_func : STATIC type FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL .  (50)
+
+	.  reduce 50
+
+
+state 234
+	object_func : VOID FUNCTION IDENTIFIER LP RP LCURL stmts . RCURL  (57)
+
+	RCURL  shift 239
+	.  error
+
+
+state 235
+	object_func : VOID FUNCTION IDENTIFIER LP decleration_list RP LCURL . stmts RCURL  (55)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 240
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 236
+	object_func : type FUNCTION IDENTIFIER LP RP LCURL stmts . RCURL  (56)
+
+	RCURL  shift 241
+	.  error
+
+
+state 237
+	object_func : type FUNCTION IDENTIFIER LP decleration_list RP LCURL . stmts RCURL  (54)
+
+	THIS  shift 3
+	IF  shift 4
+	IFF  shift 5
+	LOOP  shift 6
+	SENSOR  shift 7
+	STRING  shift 8
+	BOOLEAN  shift 9
+	INT  shift 10
+	FLOAT  shift 11
+	LIST  shift 12
+	OBJECT  shift 13
+	STATIC  shift 14
+	RETURN  shift 15
+	GET_TIME  shift 16
+	PRINT  shift 17
+	IDENTIFIER  shift 18
+	.  error
+
+	stmts  goto 242
+	stmt  goto 20
+	matched  goto 21
+	unmatched  goto 22
+	non_if_stmt  goto 23
+	assign  goto 24
+	func_call  goto 25
+	return_stmt  goto 26
+	loop  goto 27
+	static_func  goto 28
+	type  goto 29
+	chain  goto 30
+	call_array  goto 31
+	built_in_func  goto 32
+	prim  goto 33
+
+
+state 238
+	matched : IFF LP bool_ex RP LCURL stmts RCURL ELSE LCURL stmts RCURL .  (7)
+
+	.  reduce 7
+
+
+state 239
+	object_func : VOID FUNCTION IDENTIFIER LP RP LCURL stmts RCURL .  (57)
+
+	.  reduce 57
+
+
+state 240
+	object_func : VOID FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts . RCURL  (55)
+
+	RCURL  shift 243
+	.  error
+
+
+state 241
+	object_func : type FUNCTION IDENTIFIER LP RP LCURL stmts RCURL .  (56)
+
+	.  reduce 56
+
+
+state 242
+	object_func : type FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts . RCURL  (54)
+
+	RCURL  shift 244
+	.  error
+
+
+state 243
+	object_func : VOID FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL .  (55)
+
+	.  reduce 55
+
+
+state 244
+	object_func : type FUNCTION IDENTIFIER LP decleration_list RP LCURL stmts RCURL .  (54)
+
+	.  reduce 54
+
+
+62 terminals, 35 nonterminals
+101 grammar rules, 245 states

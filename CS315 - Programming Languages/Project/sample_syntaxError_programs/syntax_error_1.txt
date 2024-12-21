@@ -1,0 +1,3 @@
+//if you forget to start with begin you will always get a syntax  error, except for comments 
+//comments are ignored, and not part of the real program
+int x = 5;

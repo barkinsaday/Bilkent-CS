@@ -1,0 +1,13 @@
+begin
+//all of the statements except for the if statements ends with ";",
+//if you forget to put it, you will get a syntax error. 
+//If you put it after the if statement curly braces you will again get a syntax error;
+
+//syntax error
+int x = 5
+int y = 6;
+
+//another syntax error but the program already stoped, you should re-run it.
+if(x < 5) { x = 5; };
+
+end

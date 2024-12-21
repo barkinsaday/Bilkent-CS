@@ -1,0 +1,19 @@
+begin
+//if you use "=", instead of ":" while declaring object properties you will get a syntax error
+//also if you are going to provide more than one method, or variable you need to put "," after them
+//if there isn't a following one do not put comma. Also do not provide comma between methods and properties
+
+//syntax error
+obj dev = {string name = "ali" };
+
+
+//syntax error
+obj dev = {string name : "ali" int timer : 0};
+
+//syntax error
+obj dev = {string name : "ali", int timer : 0,};
+
+//no error
+obj dev = {string name : "ali", int timer : 0};
+
+end

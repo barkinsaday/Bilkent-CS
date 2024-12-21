@@ -1,0 +1,112 @@
+begin
+//1) Loops (Nested):
+	loop(true){
+		loop( a < 5 ){
+			a = a + 1;
+		};
+	};
+
+//2)Static Functions:
+	static void func foo(int a, bool b){a = 10; b = true;};
+	static void func boo(){b = c;};
+	static int func get(int i){ return i;};
+
+//3)Object Declaration (objects are IoT nodes):
+	obj device_1 = {
+		//Properties
+       		int device_time: getTime(),
+		list sensors: this.getSensors()
+		
+		//Methods
+		bool func isSensorWorking(int n) {
+			if(sensors[n].getInput() < 10) {
+				return true;
+			}
+			return false;
+		},
+
+		int func getFirstSensor(){
+			return sensors[0];
+		},
+
+		void func setTime(int t){
+			device_time = t;
+		}
+	};
+
+//4)Built-In Functions:
+	//connect device to the selected url
+	device_1.connectToURL(url);
+
+	//print statement
+	print("Hello Dilruba!!!");
+
+	//send input to the connected url
+	device_1.sendInput(25);
+
+	//get input from the connected url
+	int connectionInput = device_1.getInput();
+	
+	//get sensors of the device_1
+	list arr = device_1.getSensors();
+
+	//get arr length
+	int numberOfSensors = arr.length();
+
+	//get the sensor input
+	int sensorInput = device_1.sensors[0].getSensorInput();
+
+	//turn on switch 1, if the parameter bigger than or less than 10, there is a run time error.
+	device_1.turnOnSwitch(1);
+
+	//turn of switch 10
+	device_1.turnOffSwitch(10);
+	
+	//if both the switch1 and switch2 of the device1 are in the same state execute the code
+	if(device1.getSwitch(1) == device2.getSwitch(2)) {
+		print("Name of the first sensor: ", device1.sensors[0].getName());
+	}
+
+//5)If-Else Statemants:
+	//if without else (unmatched)
+	int a = 10;
+	int b = a;
+	bool flag = false;
+	if(a == b){
+		flag = true;
+	}
+	
+	//if with else (iff, matched)
+	iff(a > 20){
+		b = b * b;
+	}
+	else{
+		b = a * a;
+	}
+		
+//6)Arithmatic Operations:
+	int x = 10;
+	int y = a * 4;
+	int z = x - y * (5 / 3) + (x+y);
+	x = x - z;	
+	
+//7)Boolean Arithmatic:
+	int a = 10;
+	int b = 11;
+			
+	bool flag = (a < b) | (a == b);
+
+//8)Arrays:
+	int x = 4;
+	list arr = [1, 2, x, device_1];
+	list arr_2 = [arr[0], "A++", x + 4];
+
+//9)Data Types:
+	int a = 5;
+	float x = 5.5;
+	bool y = false;
+	string str = "Hello World!";
+	list arr = [1, 2 , str];
+	sensor sensor_1 = device_1.getFirstSensor();
+	obj device_2 = { list sensors: this.getSensors() };
+end

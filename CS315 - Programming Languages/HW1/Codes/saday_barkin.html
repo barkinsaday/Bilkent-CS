@@ -1,0 +1,41 @@
+//1) Initialize
+var grades = {'Barkin': 95, 'Ahmet': 65, 'Ayse': 78, 'Dilruba': 100};
+
+//2)Get the value for a given key
+console.log(grades['Barkin']);
+
+//3) Add a new element
+grades['Artun'] = 90;
+
+//4) Remove an element
+delete grades['Ahmet'];
+
+//5) Modify the value of an existing element
+grades['Barkin'] = 100;
+
+//6) Search for the existence of a key
+console.log('Barkin' in grades);//Should print "true"
+console.log('Ahmet' in grades);//Should print "false"
+
+//7) Search for the existence of a value
+var x = 30;
+var y = 100;
+var xb = false, yb = false;
+
+//Iterate through the array
+for(var i in grades){
+    if(grades[i] == y)
+        xy = true;
+    if(grades[i] == x)
+        xb = true;
+}
+console.log("Is " + x + " in grades: " + xb);
+console.log("Is " + y + " in grades: " + xy);
+
+//8) Loop through an associative array,i
+function foo(lst){
+    for(var i in lst){
+        console.log(i + ": " + lst[i])
+    }
+}
+foo(grades);
