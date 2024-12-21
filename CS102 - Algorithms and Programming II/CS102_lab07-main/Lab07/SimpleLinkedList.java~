@@ -1,0 +1,97 @@
+public class SimpleLinkedList
+{
+   //properities
+   private Node head;
+   
+   //consturactors
+   public SimpleLinkedList()
+   {
+      head = null;
+   }
+   
+   //methods
+   public void addToHead(Node newNode)
+   {
+      Node temp = head;
+      head = newNode;
+      newNode.setNext(temp);
+   }
+   
+   public void addToTail(String data)
+   {
+      Node newNode = new Node(data);
+      Node temp = head;
+      if(head == null)
+         head = newNode;
+      else
+      {
+         while( temp.getNext() != null)
+            temp = temp.getNext();
+         temp.setNext(newNode);
+      }
+   }
+   
+   /*public String removeFromHead()
+    {
+      
+    }*/
+   
+   public String toString()
+   {
+      String result = "";
+      int counter = 1;
+      Node temp = head;
+      if(head == null)
+         result = "List is empty";
+      else
+      {
+         while(temp.getNext() != null)
+         {
+            counter++;
+            result = result + " Data " + counter + ": " + temp.getData() + ", ";
+            temp = temp.getNext();
+         }
+      }
+      return result;
+   }
+   
+   public Node get(String data)
+   {
+      Node temp = head;
+      while(temp != null)
+      {
+         if( (temp.getData()).equals(data) )
+            return temp;
+         temp = temp.getNext();
+      }
+      return null;
+   }
+   
+   public boolean isEmpty()
+   {
+      if(head == null)
+         return true;
+      return false;
+   }
+   
+   
+   
+   /*
+    public void addToTail(String data)+
+    public String removeFromHead()
+    public boolean isEmpty() +
+    public Node get(String data) + 
+    public String toString() +
+    */ 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+}//end class

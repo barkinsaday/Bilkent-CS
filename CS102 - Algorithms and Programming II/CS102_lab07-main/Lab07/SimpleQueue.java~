@@ -1,0 +1,11 @@
+public class SimpleQueue 
+{
+   private SimpleLinkedList list;
+   
+   public SimpleQueue()
+   {
+      list = new SimpleLinkedList();
+   }
+   
+   public void enqueue(String data)
+}

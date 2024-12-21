@@ -1,0 +1,9 @@
+public class Queue 
+{
+   private SimpleLinkedList list;
+   
+   public Queue()
+   {
+      list = new SimpleLinkedList();
+   }
+}

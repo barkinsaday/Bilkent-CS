@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1638201134 source:c:\dersler\cs201\hw2\cs201_hw2_v1\main.cpp
+	<iostream>
+	<ctime>
+	<bits/stdc++.h>
+

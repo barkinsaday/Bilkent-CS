@@ -1,0 +1,29 @@
+# depslib dependency file v1.0
+1650321311 source:c:\dersler\cs202\homeworks\hw3\cs202_hw3\main.cpp
+	<iostream>
+	"Computer.h"
+	"Request.h"
+	"HBPQ.h"
+	<cstdlib>
+
+1650321311 c:\dersler\cs202\homeworks\hw3\cs202_hw3\computer.h
+	<iostream>
+
+1650321311 source:c:\dersler\cs202\homeworks\hw3\cs202_hw3\computer.cpp
+	"Computer.h"
+
+1650321311 c:\dersler\cs202\homeworks\hw3\cs202_hw3\request.h
+	<iostream>
+
+1650321311 source:c:\dersler\cs202\homeworks\hw3\cs202_hw3\request.cpp
+	"Request.h"
+
+1650382855 c:\dersler\cs202\homeworks\hw3\cs202_hw3\hbpq.h
+	"Request.h"
+
+1650384918 source:c:\dersler\cs202\homeworks\hw3\cs202_hw3\hbpq.cpp
+	"HBPQ.h"
+
+1650385618 source:c:\dersler\cs202\homeworks\hw3\cs202_hw3\simulator.cpp
+	"HBPQ.h"
+

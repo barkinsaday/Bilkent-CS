@@ -1,0 +1,18 @@
+# depslib dependency file v1.0
+1641412261 source:c:\dersler\cs201\hw4\cs201_hw4\main.cpp
+	<iostream>
+	"AlgebraicExpression.h"
+
+1641412261 source:c:\dersler\cs201\hw4\cs201_hw4\stack.cpp
+	"Stack.h"
+
+1641412261 c:\dersler\cs201\hw4\cs201_hw4\stack.h
+	<iostream>
+
+1641412261 c:\dersler\cs201\hw4\cs201_hw4\algebraicexpression.h
+	<iostream>
+	"Stack.h"
+
+1641410796 source:c:\dersler\cs201\hw4\cs201_hw4\algebraicexpression.cpp
+	"AlgebraicExpression.h"
+

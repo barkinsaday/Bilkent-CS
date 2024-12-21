@@ -1,0 +1,2 @@
+cs202_hw2: main.cpp BinaryNode.cpp BinarySearchTree.cpp
+	g++ main.cpp BinaryNode.cpp BinarySearchTree.cpp -o cs202_hw2
