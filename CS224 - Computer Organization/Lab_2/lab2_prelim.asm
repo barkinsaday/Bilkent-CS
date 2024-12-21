@@ -1,0 +1,321 @@
+# Barkýn_Saday
+# 21902967
+# CS 224
+# Section: 2
+# Lab 2: Preliminary Work
+# 25.02.2022
+.text
+# Part 1: Circular Shifts
+	# Get Inputs Input: Decimal number 
+	li $v0, 4
+	la $a0, msg_Input
+	syscall
+	li $v0, 5
+	syscall
+	move $s0, $v0 # s0: holds decimal input
+	jal space
+	
+	# Output Hexadecimal
+	li $v0, 4
+	la $a0, msg_HexInput
+	syscall
+	li $v0, 34
+	move $a0, $s0
+	syscall
+	jal space
+	
+	# Get Input: Shift Amount
+	li $v0, 4
+	la $a0, msg_ShiftAmount
+	syscall
+	li $v0, 5
+	syscall
+	move $s1, $v0 # s1: holds input shift amount
+	jal space
+	
+	# Call SLC
+	move $a0, $s0
+	move $a1, $s1
+	jal SLC
+	move $s2, $v0 # s2: holds output from SLC
+	
+	# Output SLC
+	li $v0, 4
+	la $a0, msg_SLC
+	syscall
+	li $v0, 34
+	move $a0, $s2
+	syscall
+	jal space
+	
+	# Call SRC
+	move $a0, $s0
+	move $a1, $s1
+	jal SRC
+	move $s2, $v0 # s2: holds output from SLC
+	
+	# Output SRC
+	li $v0, 4
+	la $a0, msg_SRC
+	syscall
+	li $v0, 34
+	move $a0, $s2
+	syscall
+	
+# Part 2: Array Processing
+	
+	jal space
+	jal createArray
+	
+	move $a0, $v0
+	move $a1, $v1
+	jal arrayOperations
+	
+	# Exit Program...
+	li $v0, 10
+	syscall
+	# End of "main"...
+	
+##################################################################################################
+# Sub-Programs:
+space:
+	li $v0, 4
+	la $a0, newLine
+	syscall
+	jr $ra
+SLC: # a0: input value (32-bit), a1: shift amount (1 means 4 bit), v0: shifted number
+	addi $sp, $sp, -12
+	sw $s0, 0($sp)
+	sw $s1, 4($sp)
+	sw $s2, 8($sp)
+	
+	li $s0, 0
+	li $s1, 0
+	li $s2, 0
+	
+	# Adjusting the shift amount accordingly)
+	li $s0, 32
+	div $a1, $s0 # hi: shift amount (since every 32-bit shift means nothing)
+	mfhi $s0 # t0: adjusted shift amount
+	sub $s1, $s1, $s0
+	addi $s1, $s1, 32 # t1: 32 - adjusted shift amount
+	
+	move $s2, $a0
+	srlv $s2, $s2, $s1 # t2: holds lost bits
+	sllv $v0, $a0, $s0 # v0: result of shift (some bits are lost)
+	
+	or $v0, $v0, $s2 # combine result of shift with lost bits to make it circular
+	
+	lw $s2, 8($sp)
+	lw $s1, 4($sp)
+	lw $s0, 0($sp)
+	addi $sp, $sp, 12
+	jr $ra
+	# End of "SLC" 
+	
+SRC:
+	addi $sp, $sp, -12
+	sw $ra, 0($sp)
+	sw $s0, 4($sp)
+	sw $s1, 8($sp)
+	
+	li $s0, 0
+	li $s1, 0
+	li $s2, 0
+	
+	li $s0, 32
+	div $a1, $s0 # hi: shift amount (since every 32-bit shift means nothing)
+	mfhi $s0 # t0: adjusted shift amount
+	li $s1, 32
+	sub $s0, $s1, $s0 # t1: 32 - adjusted shift amount
+	
+	move $a1, $s0
+	jal SLC # Call SLC with 32-shift amount
+	
+	lw $s1, 8($sp)
+	lw $s0, 4($sp)
+	lw $ra, 0($sp)
+	addi $sp, $sp, 12
+	jr $ra
+	# End of "SRC"
+
+createArray: # return-> v0: array begining adress, v1: array size (bytes)
+	addi $sp, $sp, -16
+	sw $ra, 0($sp)
+	sw $s0, 4($sp)
+	sw $s1, 8($sp)
+	sw $s2, 12($sp)
+	
+	askAgain:
+	li $v0, 4
+	la $a0, msg_ArraySize
+	syscall
+	li $v0, 5
+	syscall
+	blt $v0, $zero, askAgain # ask size again if it is a negative number
+	mul $a0, $v0, 4
+	li $v0, 9
+	syscall
+	
+	move $s0, $v0 # s0: holds arrays adress
+	move $s1, $a0 # s1: holds array size (no of elements)
+	move $s2, $s0 # s2: holds array adress (but it will move on)
+	li $s3, 0 # just to keep track of when to exit the loop
+	
+	init_array:
+		beq $s1, $s3, exit_init_array
+		jal space
+		
+		li $v0, 4
+		la $a0, msg_enterElement
+		syscall
+		li $v0, 5
+		syscall
+		sw $v0, ($s2)
+		addi $s2, $s2, 4
+		addi $s3, $s3, 4 # s3 = s3 + 4
+		j init_array
+		
+	exit_init_array:
+		move $v0, $s0
+		move $v1, $s1
+		
+		lw $s2, 12($sp)
+		lw $s1, 8($sp)
+		lw $s0, 4($sp)
+		lw $ra, 0($sp)
+		addi $sp, $sp, 16
+		jr $ra
+	# End of "create array"
+	
+arrayOperations: # inputs-> a0: array adress, a1: array size
+	addi $sp, $sp, -36
+	sw $ra, 0($sp) 
+	sw $s0, 4($sp)
+	sw $s1, 8($sp)
+	sw $s2, 12($sp)
+	sw $s3, 16($sp)
+	sw $s4, 20($sp)
+	sw $s5, 24($sp)
+	sw $s6, 28($sp)
+	sw $s7, 32($sp)
+	
+	move $s0, $a0 # s0: holds array adress
+	move $s1, $a1 # s1: holds array size
+	menu:
+		jal space
+		li $v0, 4
+		la $a0, msg_menu
+		syscall
+		li $v0, 5
+		syscall
+		beq $v0, 1, minB
+		beq $v0, 2, maxB
+		beq $v0, 3, sumB
+		beq $v0, 4, palindromeB
+		beq $v0, $zero, exit_menu
+		
+		jal space
+		li $v0, 4
+		la $a0, error_menu
+		syscall
+		j menu
+		
+		# Branch a label to jump and link
+		minB: 
+			jal min
+			j menu
+		maxB:
+			#jal max
+			j menu
+		sumB:
+			#jal sum
+			j menu
+		palindromeB:
+			#jal palindrome
+			j menu
+		
+	exit_menu:
+	lw $s7, 32($sp)
+	lw $s6, 28($sp)
+	lw $s5, 24($sp)
+	lw $s4, 20($sp)
+	lw $s3, 16($sp)
+	lw $s2, 12($sp)
+	lw $s1, 8($sp)
+	lw $s0, 4($sp)
+	lw $ra, 0($sp)
+	addi $sp, $sp, 36
+	jr $ra
+	# End of "arrayOperations"
+	
+min: # s0: array adress, s1: array size
+	addi $sp, $sp, -36
+	sw $ra, 0($sp) 
+	sw $s0, 4($sp)
+	sw $s1, 8($sp)
+	sw $s2, 12($sp)
+	sw $s3, 16($sp)
+	sw $s4, 20($sp)
+	sw $s5, 24($sp)
+	sw $s6, 28($sp)
+	sw $s7, 32($sp)
+	
+	li $s2, 0 # curent max
+	li $s3, 0 # s3: only for exiting loop
+	move $s7, $s0 # s7: holds array adress (will change)
+	
+	find_min:
+		beq $s3, $s1, exit_find_min
+		lw $s4, ($s7) # s4: current element of array
+		bgt $s4, $s2, newMax # if curr > max, max = curr
+		b skip_newMax
+		
+		newMax:
+			move $s2, $s4 # s2: updated
+			
+		skip_newMax:
+		addi $s7, $s7, 4
+		addi $s3, $s3, 4
+		j find_min
+		
+	exit_find_min:
+		li $v0, 4
+		la $a0, msg_result
+		syscall
+		li $v0, 1
+		move $a0, $s2
+		syscall
+		jal space
+		
+	lw $s7, 32($sp)
+	lw $s6, 28($sp)
+	lw $s5, 24($sp)
+	lw $s4, 20($sp)
+	lw $s3, 16($sp)
+	lw $s2, 12($sp)
+	lw $s1, 8($sp)
+	lw $s0, 4($sp)
+	lw $ra, 0($sp)
+	addi $sp, $sp, 36
+		  
+	jr $ra
+	# End of "min"
+
+		
+	
+##################################################################################################
+	
+.data
+	newLine: .asciiz "\n"
+	msg_Input: .asciiz "Enter the number to shifted (decimal): "
+	msg_ShiftAmount: .asciiz "Enter the shift amount (every 4 moves 1 digit): "
+	msg_HexInput: .asciiz "Input (Hexadecimal): "
+	msg_SLC: .asciiz "SLC (Hexadecimal): "
+	msg_SRC: .asciiz "SRC (Hexadecimal): "
+	msg_ArraySize: .asciiz "Enter array size: "
+	msg_enterElement: .asciiz "Enter an integer: "
+	msg_menu: .asciiz "Enter operation (1-min, 2-max, 3-sum, 4-palindrome, 0-exit): "
+	error_menu: .asciiz "Please choose a valid operation!"
+	msg_result: .asciiz "Result: "
+

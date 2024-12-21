@@ -1,0 +1,216 @@
+CS224 / Lab 7.                	
+Sec 2 			Sec 2
+Utku Kurtulmus               Barkın Saday
+ID:21903025		ID:21902967
+
+PART2_B
+    a) SFRs
+I-O Devices
+A DC motor->PORTA,  TRISA, LATA
+2 Button Switches ->PORTE,  TRISE, LATE
+
+       b)  code
+
+#include <P32.xxxx.h>
+ 
+//DC motor 
+// J4: Control1 : 10, MOTOR1:3 
+//     Control2 : 2, MOTOR2:6
+ 
+//Push Buttons
+//J1 Button0 : 1
+//   Button1 : 10
+ 
+void main() {
+ 
+AD1PCFG = 0xFFFF;      // Configure AN pins as digital I/O
+JTAGEN_bit = 0;        // Disable JTAG
+ 
+TRISE = 0xFFFF         //portE inputs(switch buttons)
+TRISA = 0x0000         //portA outputs for DC motor
+ 
+LATA = 0Xffff; //default values
+LATE = 0X0000; //default values
+ 
+ 
+while(1) {
+  if(PORTEbits.RB0 & PORTEbits.RB1) { //if you push two button at the same time, no turn
+  	PORTAbits.CONTROL1 = 0;
+  	PORTAbits.CONTROL2 = 0;
+  }
+  else{
+  	PORTAbits.CONTROL1 = PORTEbits.RB0; //if you push button 0(RB0) turn counter-clockwise
+  	PORTAbits.CONTROL2 = PORTEbits.RB1; //if you push button 1(RB1) turn clockwise
+  }		
+}
+ 
+}
+
+PART2_C
+
+c) SFRs
+I-O Devices
+Seven Segment Module--> > D->TRISA, PORTA, 
+        AN->TRISE, PORTE
+d) code
+/*
+Configuration for the code below:
+ 
+Connect portA to J1 Port of 4 Digit Seven Segment Module
+Jumpers of portA are : 5V, pull down ( top one to left, other to right )
+ 
+Connect portE to J2 Port of 4 Digit Seven Segment Module
+Jumpers of portE are : 5V, pull down ( top one to left, other to right )
+*/
+ 
+// Hexadecimal values for digits in 7 segment
+unsigned char binary_pattern[]={0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F};
+ 
+void main() {
+ 
+AD1PCFG = 0xFFFF;      // Configure AN pins as digital I/O
+JTAGEN_bit = 0;        // Disable JTAG
+    
+TRISA = 0x00;  //portA is output to D
+TRISE = 0X00;  //portE is output to AN
+ 
+int i = 1;
+while(1)
+{   
+     //Digit1
+     PORTA=binary_pattern[i % 10];
+     PORTE=0x01;
+     Delay_ms(1);
+     
+     // Digit 2
+     PORTA=binary_pattern[(i + 1) % 10];     // Put 2 to the second digit
+     PORTE=0x02;                  // Open second digit
+     Delay_ms(1);
+     
+     // Digit 3
+     PORTA=binary_pattern[(i + 2) % 10];
+     PORTE=0x04;
+     Delay_ms(1);
+     
+     // Digit 4
+     PORTA=binary_pattern[(i + 3) % 10];
+     PORTE=0x08;
+     Delay_ms(1);
+ 
+ 
+     Delay_ms(1000); // wait 1 second
+     i++; 
+}
+ 
+}//main
+
+
+PART2_D
+e) SFRs
+
+I-O Devices
+8 LED outputs → LATA , TRISA
+3 Button Switches → PORTE,  TRISE
+
+f) code
+	void main() { 
+
+  
+
+AD1PCFG = 0xFFFF;       
+
+JTAGEN_bit = 0;      
+
+  
+
+TRISA = 0; //PORTA is output for LEDs 
+
+TRISE = 1; //PORTE is input to read push-buttons 
+
+  
+
+int speed = 1000; // one second (default), make it smaller for faster demonstration 
+
+Delay_ms(speed); 
+
+  
+
+int c = 0 //counter 
+
+LATA = 0xffff; //LEDs off by default 
+
+LATE = 0x0000;  
+
+  
+
+//Loop 
+
+while(1)//always keep going 
+
+{	 
+
+	PORTE = 0x0000;//reset push-buttons 
+
+	if(PORTEbits.RF2 == 1)//reset is pressed 
+
+	{ 
+
+		LATA = 0b11111111; 
+
+		c =  0; 
+
+		continue; 
+
+	} 
+
+  
+
+	//1 is pressed, 0 is unpressed 
+
+	if(PORTEbits.RF0 == 1 && PORTEbits.RF1 == 1) //if both pressed, ignore  
+
+	{ 
+
+		continue; 
+
+	} 
+
+	else if(PORTEbits.RF0 == 1)//left to right (RF0 is pressed) 
+
+	{ 
+
+		LATA = c % 128; 
+
+		c++;  
+
+	} 
+
+	else if(PORTEbits.RF1 == 1)//right to left (RF1 is pressed) 
+
+	{	 
+
+		LATA.F0 = ((c % 128) & 0b10000000) != 0; 
+
+		LATA.F1 = ((c % 128) & 0b01000000) != 0; 
+
+		LATA.F2 = ((c % 128) & 0b00100000) != 0; 
+
+		LATA.F3 = ((c % 128) & 0b00010000) != 0; 
+
+		LATA.F4 = ((c % 128) & 0b00001000) != 0; 
+
+		LATA.F5 = ((c % 128) & 0b00000100) != 0; 
+
+		LATA.F6 = ((c % 128) & 0b00000010) != 0; 
+
+		LATA.F7 = ((c % 128) & 0b00000001) != 0; 
+
+		c++; 
+
+	} 
+
+ 
+
+	Delay_ms(speed); 
+} 
+}//end of main
